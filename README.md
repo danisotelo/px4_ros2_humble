@@ -2,14 +2,14 @@
 
 ## Overview
 
-This Dockerfile provides a HTML5 VNC interface to access Ubuntu Desktop 22.04 with ROS 2 Humble, PX4 and Gazebo Harmonic. It includes additional tools such as Mozilla Firefox Navigator, Terminator and VSCodium for easy development. This project can be used as a template for different environment configurations through easy modifications. This project was greatly inspired by the work done by [Tiryoh](https://github.com/Tiryoh/docker-ros2-desktop-vnc/tree/master).
+This Dockerfile provides a HTML5 VNC interface to access Ubuntu Desktop 22.04 with ROS 2 Humble, PX4 and Gazebo Harmonic. It includes additional tools such as Mozilla Firefox Navigator, Terminator and VSCodium for easy development. This project can be used as a template for different environment configurations through easy modifications. This work was greatly inspired by the work done by [Tiryoh](https://github.com/Tiryoh/docker-ros2-desktop-vnc/tree/master).
 
-The implemented project consists of a UR5e robotic arm visually tracking a x500 drone equipped with an ArUco tag. Since there is no official support for robot control with ROS 2 + Gazebo Harmonic, this project has additionally developed a custom ROS package to make them compatible (see `src/gz_ros2_control`). This project additionally provides a ROS 2 package with the description files of the UR5e arm equipped with the Robotiq-85 gripper and one Intel RealSense D435 camera attached to the arm through a custom-designed support assembly.
+The implemented project consists of a UR5e robotic arm visually tracking a Holybro x500 drone equipped with an ArUco tag. Since there is no official support for robot control with ROS 2 Humble + Gazebo Harmonic, this project has additionally developed a custom ROS package to make them compatible (see `src/gz_ros2_control`). This project also provides a ROS 2 package with the description files of the UR5e arm equipped with the Robotiq-85 gripper and one Intel RealSense D435 camera attached to the arm through a custom-designed support assembly.
 
 ## Get Started
 
 ### Install Docker
-You can install Docker using the `apt` repository or install it from a package. Here the `apt` repository installation method is indicated. In first place you need to set up the Docker `apt` repository. The first step is to add the Docker's official GPG key:
+You can install Docker using the `apt` repository or install it from a package. Here, the `apt` repository installation method is indicated. In first place, you need to set up the Docker `apt` repository. The first step is to add the Docker's official GPG key:
 ```
 sudo apt-get update
 sudo apt-get install ca-certificates curl gnupg
@@ -33,7 +33,7 @@ You can run `hello-world` image to verify the installation:
 ```
 sudo docker run hello-world
 ```
-If you see `Hello from Docker!` message, it's a sign that you have succesfully installed and started Docker Engine. As you noticed, you have to run Docker with `sudo` and you will get permissions denied if you try to run `docker run` without sudo. If you don't want to use `sudo` create a Unix group called `docker` and add users to it:
+If you see `Hello from Docker!` message, it's a sign that you have succesfully installed and started Docker Engine. As you noticed, you have to run Docker with `sudo` and you will get permissions denied if you try to run `docker run` without it. If you don't want to use `sudo` create a Unix group called `docker` and add users to it:
 ```
 sudo groupadd docker
 sudo gpasswd -a $USER docker
@@ -70,9 +70,9 @@ http://localhost:6080/
 Click on `Connect` and now you have access to the container GUI through the HTML5 VNC interface.
 
 ### Install PX4-Autopilot
-Since the PX4-Autopilot is a heavy repository, it was decided not to include it directly inside the container but in a shared volume with the host. This way, it only has to be downloaded once and changes will be saved even after deleting the container. Run the following commands to install it:
+Since the PX4-Autopilot is a heavy repository, it was decided not to include it directly inside the container but in a shared volume with the host. This way, it only has to be downloaded once and changes will be saved even after deleting the container. Run the following commands from a terminal inside the container to install it:
 ```
-cd ~/px4_ros2_humble_shared_volume
+cd ~/shared_volume
 git clone https://github.com/PX4/PX4-Autopilot.git --recursive
 ```
 Next, enter the `PX4-Autopilot` directory, clean and build the source code:
@@ -90,9 +90,15 @@ The XRCE-DDS Agent is already built with the Docker image. In a new terminal, ru
 ```
 MicroXRCEAgent udp4 -p 8888
 ```
-For loading the PX4 files (airframes, models, and worlds) for the UR5e drone-tracking project, you need to additionally run a bash script, `file_transfer` that will be in charge of modifying the original PX4-Autopilot repository accordingly. If you want to use this simulation run:
+For loading the PX4 files (airframes, models, and worlds) for the UR5e drone-tracking project, you need to additionally run a bash script, `file_transfer` that will be in charge of modifying the original PX4-Autopilot repository accordingly. If you want to use this simulation run in a container terminal:
 ```
-
+cd ~/px4_files
+bash file_transfer.sh
+cd ~/shared_volume/PX4-Autopilot
+make clean
+make distclean
+make submodulesclean
+make px4_sitl gz_x500_tag
 ```
 
 ### Build and Run ROS 2 Workspace
@@ -100,6 +106,7 @@ The ROS 2 workspace is named `catkin_ws` and belongs to the shared volume. This 
 
 Then, you can access these files from the container, and changes will be saved even after deleting the container. The next step is to build the ROS 2 workspace and launch the simulation using the following commands from the `catkin_ws` folder:
 ```
+cd ~/shared_volume/catkin_ws
 colcon build
 ros2 launch drone_following simulation.launch.py
 ```
@@ -117,4 +124,4 @@ docker system prune -a --volumes
 ```
 
 ## Bugs & Feature Requests
-The project is still in the early stages of development and we welcome feedback. Please report bugs and request features using the [Issue Tracker]().
+Feedback to improve the project is welcomed. Please report bugs and request features using the [Issue Tracker](https://github.com/danisotelo/px4_ros2_humble/issues).
