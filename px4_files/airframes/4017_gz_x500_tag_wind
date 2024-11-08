@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# @name Gazebo x500 tag
+#
+# @type Quadrotor
+#
+
+PX4_GZ_WORLD=${PX4_GZ_WORLD:=follow_drone_wind}
+PX4_SIM_MODEL=${PX4_SIM_MODEL:=x500_tag}
+PX4_GZ_MODEL_POSE="2,0,0,0,0,3.14159"
+
+. ${R}etc/init.d-posix/airframes/4001_gz_x500

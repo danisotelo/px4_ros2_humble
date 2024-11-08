@@ -1,0 +1,30 @@
+# *******************************************************************************
+# Script Name  : docker-compose.yml
+# Author       : Daniel Sotelo Aguirre
+# Date         : 08/11/2024
+# Version      : v1.0
+# *******************************************************************************
+
+version: '3.8'
+
+services:
+  ros2-desktop-vnc:
+    build: .
+    container_name: ${CONTAINER_NAME:-px4_ros2_humble}
+    ports:
+      - "6080:80"
+    security_opt:
+      - seccomp:unconfined
+    shm_size: 512m
+    volumes:
+      - /home/${HOST_USER:-dani}/${CONTAINER_NAME:-px4_ros2_humble}_shared_volume:/home/${CONTAINER_USER:-ubuntu}/shared_volume:rw
+    environment:
+      - USER=${CONTAINER_USER:-ubuntu}
+      - PASSWORD=${CONTAINER_PASSWD:-ubuntu}
+    stdin_open: true
+    tty: true
+    privileged: true
+
+volumes:
+  shared_volume:
+    driver: local

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version='1.9'>
+  <model name='x500_tag'>
+    <include merge='true'>
+      <uri>x500</uri>
+    </include>
+    <link name='aruco_base'>
+      <pose>0.13 0 0.13 1.5708 0 0</pose>
+      <inertial>
+        <mass>0.0</mass>
+        <inertia>
+          <ixx>0.0</ixx>
+          <iyy>0.0</iyy>
+          <izz>0.0</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <visual name='base_visual'>
+        <geometry>
+          <plane>
+            <normal>1 0 0</normal>
+            <size>0.18 0.18</size>
+          </plane>
+        </geometry>
+        <material>
+          <diffuse>1 1 1 1</diffuse>
+          <diffuse>1 1 1 1</diffuse>
+          <specular>0.1 0.1 0.1 1</specular>
+          <specular>0 0 0 1</specular>
+          <pbr>
+            <metal>
+              <albedo_map>model://arucotag/arucotag.png</albedo_map>
+            </metal>
+          </pbr>
+        </material>
+      </visual>
+    </link>
+    <!-- Include the ArUco tag model -->
+    <joint name="aruco_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>aruco_base</child>
+      <pose>0 0 0 0 0 0</pose>
+    </joint>
+  </model>
+</sdf>
