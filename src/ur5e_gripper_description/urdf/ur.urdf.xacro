@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+   <!-- robot name parameter -->
+   <xacro:arg name="name" default="ur"/>
+   <!-- import main macro -->
+   <xacro:include filename="$(find ur5e_gripper_description)/urdf/ur_macro.xacro"/>
+   <xacro:include filename="$(find ur5e_gripper_description)/urdf/robotiq_85_gripper.urdf.xacro"/>
+
+   <!-- possible 'ur_type' values: ur3, ur3e, ur5, ur5e, ur10, ur10e, ur16e, ur20, ur30 -->
+   <!-- the default value should raise an error in case this was called without defining the type -->
+   <xacro:arg name="ur_type" default="ur5x"/>
+   <xacro:property name="M_PI" value="3.141592653589793" />
+
+
+   <!-- parameters -->
+   <xacro:arg name="tf_prefix" default="" />
+   <xacro:arg name="joint_limit_params" default="$(find ur5e_gripper_description)/config/$(arg ur_type)/joint_limits.yaml"/>
+   <xacro:arg name="kinematics_params" default="$(find ur5e_gripper_description)/config/$(arg ur_type)/default_kinematics.yaml"/>
+   <xacro:arg name="physical_params" default="$(find ur5e_gripper_description)/config/$(arg ur_type)/physical_parameters.yaml"/>
+   <xacro:arg name="visual_params" default="$(find ur5e_gripper_description)/config/$(arg ur_type)/visual_parameters.yaml"/>
+   <xacro:arg name="transmission_hw_interface" default=""/>
+   <xacro:arg name="safety_limits" default="false"/>
+   <xacro:arg name="safety_pos_margin" default="0.15"/>
+   <xacro:arg name="safety_k_position" default="20"/>
+   <!-- ros2_control related parameters -->
+   <xacro:arg name="headless_mode" default="false" />
+   <xacro:arg name="robot_ip" default="0.0.0.0" />
+   <xacro:arg name="script_filename" default=""/>
+   <xacro:arg name="output_recipe_filename" default=""/>
+   <xacro:arg name="input_recipe_filename" default=""/>
+   <xacro:arg name="reverse_ip" default="0.0.0.0"/>
+   <xacro:arg name="script_command_port" default="50004"/>
+   <xacro:arg name="reverse_port" default="50001"/>
+   <xacro:arg name="script_sender_port" default="50002"/>
+   <xacro:arg name="trajectory_port" default="50003"/>
+   <!--   tool communication related parameters-->
+   <xacro:arg name="use_tool_communication" default="false" />
+   <xacro:arg name="tool_voltage" default="0" />
+   <xacro:arg name="tool_parity" default="0" />
+   <xacro:arg name="tool_baud_rate" default="115200" />
+   <xacro:arg name="tool_stop_bits" default="1" />
+   <xacro:arg name="tool_rx_idle_chars" default="1.5" />
+   <xacro:arg name="tool_tx_idle_chars" default="3.5" />
+   <xacro:arg name="tool_device_name" default="/tmp/ttyUR" />
+   <xacro:arg name="tool_tcp_port" default="54321" />
+
+     <!-- Simulation parameters -->
+   <xacro:arg name="use_fake_hardware" default="false" />
+   <xacro:arg name="fake_sensor_commands" default="false" />
+   <xacro:arg name="sim_gazebo" default="false" />
+   <xacro:arg name="sim_ignition" default="false" />
+   <xacro:arg name="simulation_controllers" default="" />
+
+   <!-- initial position for simulations (Fake Hardware, Gazebo, Ignition) -->
+   <xacro:arg name="initial_positions_file" default="$(find ur5e_gripper_description)/config/initial_positions.yaml"/>
+
+   <!-- convert to property to use substitution in function -->
+   <xacro:property name="initial_positions_file" default="$(arg initial_positions_file)"/>
+
+   <!-- Gripper -->
+   <xacro:robotiq_85_gripper prefix="gripper_" parent="tool0">
+       <origin xyz="0 0 0" rpy="0 -1.57 1.57"/>
+   </xacro:robotiq_85_gripper>
+
+    <!-- Camera support -->
+    <joint name="joint_support_1" type="fixed">
+        <origin rpy="${M_PI/2.0} 0 ${M_PI/2.0}" xyz="0.0 0.0 -0.04"/>
+        <parent link="wrist_3_link"/>
+        <child link="support_1"/>
+    </joint>
+
+    <link name="support_1">
+        <visual>
+            <geometry>
+                <mesh filename="file://$(find ur5e_gripper_description)/meshes/d435/support_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="plastic"/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="file://$(find ur5e_gripper_description)/meshes/d435/support_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="plastic"/>
+        </collision>
+        <inertial>
+            <origin xyz="0.01228796808 0.01249999995 0.00005455685"/>
+            <mass value="0.00312302"/>
+            <inertia ixx="0.00000189979018" ixy="0.00000000" ixz="0.00000000188660" iyy="0.00000204231304" iyz="0.00000000" izz="0.00000045513762"/> 
+        </inertial>
+    </link>
+
+    <joint name="joint_support_2" type="fixed">
+        <origin rpy="0 ${M_PI} 0" xyz="0.0 0.0 0.0"/>
+        <parent link="support_1"/>
+        <child link="support_2"/>
+    </joint>
+
+    <link name="support_2">
+        <visual>
+            <geometry>
+                <mesh filename="file://$(find ur5e_gripper_description)/meshes/d435/support_2.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="plastic"/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="file://$(find ur5e_gripper_description)/meshes/d435/support_2.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="plastic"/>
+        </collision>
+        <inertial>
+            <origin xyz="0.02606678445 0.01310900418 0.00003986439"/>
+            <mass value="0.00582375"/>
+            <inertia ixx="0.00000336210388" ixy="-0.00000006511344" ixz="0.00000000535896" iyy="0.00000529075409" iyz="-0.00000000000178" izz="0.00000244065878"/>
+        </inertial>
+    </link>
+
+    <joint name="joint_support_3" type="fixed">
+        <origin rpy="${96*M_PI/180} ${M_PI/2.0} 0" xyz="0.0825 0.0246 0.04"/>
+        <parent link="support_2"/>
+        <child link="support_3"/>
+    </joint>
+
+    <link name="support_3">
+        <visual>
+            <geometry>
+                <mesh filename="file://$(find ur5e_gripper_description)/meshes/d435/support_3.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="plastic"/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="file://$(find ur5e_gripper_description)/meshes/d435/support_3.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="plastic"/>
+        </collision>
+        <inertial>
+            <origin xyz="0.04000010933 -0.00463324120 0.00719944346"/>
+            <mass value="0.00438996"/>
+            <inertia ixx="0.00000100637191" ixy="0.00000000" ixz="0.00000000" iyy="0.00000178536815" iyz="0.00000006806630" izz="0.00000264518318"/>
+        </inertial>
+    </link>
+
+   <!-- Camera -->
+   <xacro:arg name="use_nominal_extrinsics" default="true"/>
+   <xacro:include filename="$(find ur5e_gripper_description)/urdf/d435.urdf.xacro" />
+   <xacro:sensor_d435 parent="support_3" use_nominal_extrinsics="$(arg use_nominal_extrinsics)">
+     <origin xyz="0.04 0 -0.01" rpy="${-M_PI/2.0} ${M_PI/2.0} 0"/>
+   </xacro:sensor_d435>
+
+   <!-- create link fixed to the "world" -->
+   <link name="world" />
+
+   <!-- arm -->
+   <xacro:ur_robot
+     name="$(arg name)"
+     tf_prefix="$(arg tf_prefix)"
+     parent="world"
+     joint_limits_parameters_file="$(arg joint_limit_params)"
+     kinematics_parameters_file="$(arg kinematics_params)"
+     physical_parameters_file="$(arg physical_params)"
+     visual_parameters_file="$(arg visual_params)"
+     transmission_hw_interface="$(arg transmission_hw_interface)"
+     safety_limits="$(arg safety_limits)"
+     safety_pos_margin="$(arg safety_pos_margin)"
+     safety_k_position="$(arg safety_k_position)"
+     use_fake_hardware="$(arg use_fake_hardware)"
+     fake_sensor_commands="$(arg fake_sensor_commands)"
+     sim_gazebo="$(arg sim_gazebo)"
+     sim_ignition="$(arg sim_ignition)"
+     headless_mode="$(arg headless_mode)"
+     initial_positions="${xacro.load_yaml(initial_positions_file)}"
+     use_tool_communication="$(arg use_tool_communication)"
+     tool_voltage="$(arg tool_voltage)"
+     tool_parity="$(arg tool_parity)"
+     tool_baud_rate="$(arg tool_baud_rate)"
+     tool_stop_bits="$(arg tool_stop_bits)"
+     tool_rx_idle_chars="$(arg tool_rx_idle_chars)"
+     tool_tx_idle_chars="$(arg tool_tx_idle_chars)"
+     tool_device_name="$(arg tool_device_name)"
+     tool_tcp_port="$(arg tool_tcp_port)"
+     robot_ip="$(arg robot_ip)"
+     script_filename="$(arg script_filename)"
+     output_recipe_filename="$(arg output_recipe_filename)"
+     input_recipe_filename="$(arg input_recipe_filename)"
+     reverse_ip="$(arg reverse_ip)"
+     script_command_port="$(arg script_command_port)"
+     reverse_port="$(arg reverse_port)"
+     script_sender_port="$(arg script_sender_port)"
+     trajectory_port="$(arg trajectory_port)"
+     >
+     <origin xyz="0 0 0" rpy="0 0 0" />          <!-- position robot in the world -->
+   </xacro:ur_robot>
+
+   <xacro:if value="$(arg sim_gazebo)">
+    <!-- Gazebo plugins -->
+    <gazebo reference="world">
+    </gazebo>
+    <gazebo>
+      <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+        <parameters>$(arg simulation_controllers)</parameters>
+      </plugin>
+    </gazebo>
+  </xacro:if>
+
+  <xacro:if value="$(arg sim_ignition)">
+    <!-- Gazebo plugins -->
+    <gazebo reference="world">
+    </gazebo>
+    <gazebo>
+      <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(arg simulation_controllers)</parameters>
+        <controller_manager_node_name>$(arg tf_prefix)controller_manager</controller_manager_node_name>
+      </plugin>
+    </gazebo>
+
+
+  </xacro:if>
+
+</robot>
