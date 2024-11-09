@@ -1,5 +1,7 @@
 # Docker VNC ROS2 Humble + PX4 + Gazebo Harmonic
 
+https://github.com/user-attachments/assets/8e8c75f2-6713-42a0-82e4-c754222bef5c
+
 ## Overview
 
 This Dockerfile provides a HTML5 VNC interface to access Ubuntu Desktop 22.04 with ROS 2 Humble, PX4 and Gazebo Harmonic. It includes additional tools such as Mozilla Firefox Navigator, Terminator and VSCodium for easy development. This project can be used as a template for different environment configurations through easy modifications. This work was greatly inspired by the work done by [Tiryoh](https://github.com/Tiryoh/docker-ros2-desktop-vnc/tree/master).
