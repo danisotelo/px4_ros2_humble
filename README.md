@@ -109,7 +109,7 @@ The ROS 2 workspace is named `catkin_ws` and belongs to the shared volume. This 
 Then, you can access these files from the container, and changes will be saved even after deleting the container. The next step is to build the ROS 2 workspace and launch the simulation using the following commands from the `catkin_ws` folder:
 ```
 cd ~/shared_volume/catkin_ws
-colcon build
+colcon build --packages-select drone_following gz_ros2_control px4_msgs ur5e_gripper_description
 ros2 launch drone_following simulation.launch.py
 ```
 While working with the container if ever the user session is closed, the user and password are both `ubuntu`.
