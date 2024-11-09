@@ -1,5 +1,7 @@
 # Docker VNC ROS2 Humble + PX4 + Gazebo Harmonic
 
+![vnc_px4_ros2_dev](https://github.com/user-attachments/assets/ce466767-dc35-4628-8fee-2093d2b98597)
+
 https://github.com/user-attachments/assets/8e8c75f2-6713-42a0-82e4-c754222bef5c
 
 ## Overview
