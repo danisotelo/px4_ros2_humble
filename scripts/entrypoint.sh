@@ -398,9 +398,12 @@ chown -R $USER:$USER $HOME/Desktop
 echo "Installing packages..."
 sudo add-apt-repository universe -y
 sudo apt update
+sudo apt install gnome-terminal -y
 sudo apt install ros-humble-controller-manager -y
 sudo apt install ros-humble-ur-description -y
-sudo apt install gnome-terminal -y
+sudo apt install ros-humble-joint-state-broadcaster -y
+sudo apt install ros-humble-joint-trajectory-controller -y
+sudo apt install ros-humble-ros-gzharmonic-bridge -y
 
 # clearup
 PASSWORD=
