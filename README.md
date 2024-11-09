@@ -59,7 +59,7 @@ git clone https://github.com/danisotelo/px4_ros2_humble.git
 ```
 
 ### Build Docker Image and Run
-Building the Docker image and running the container from the Dockerfile using Docker-Compose is really simple, you just need to run:
+Now, go into the `.env` file and change the `HOST_USER` environment variable to your actual host user. Building the Docker image and running the container from the Dockerfile using Docker-Compose is really simple, you just need to run:
 ```
 cd ~/px4_ros2_humble
 docker-compose build
